@@ -77,14 +77,6 @@ func (c *connection) HandleSMTP() {
     }
     line = strings.TrimSpace(line)
     if inDataTransaction {
-      data = append(data, line)
-      if subject == "" && strings.HasPrefix("Subject:", line) {
-        if subj := strings.SplitN(line, ":", 2); len(subj) == 2 {
-          subject = subj[1]
-        } else {
-          subject = "Unknown"
-        }
-      }
       if line == "." {
         // send all tge data
         message := Message{
@@ -97,6 +89,15 @@ func (c *connection) HandleSMTP() {
         }
         userMails.AddMail(senderMail, message)
         inDataTransaction = false
+        continue
+      }
+      data = append(data, line)
+      if subject == "" && strings.HasPrefix("Subject:", line) {
+        if subj := strings.SplitN(line, ":", 2); len(subj) == 2 {
+          subject = subj[1]
+        } else {
+          subject = "Unknown"
+        }
       }
       continue
     }
